@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader | DisruptorDev</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --accent-color: #ff6b6b;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --success-color: #28a745;
+        }
+        .video-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .thumbnail {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .format-option {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--light-color) 0%, #e0e5ec 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--success-color) 0%, #5cb85c 100%) !important;
+            z-index: 1030;
+        }
+        
+        .downloader-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .downloader-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a41b0;
+            border-color: #3a41b0;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .social-icon {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            transition: color 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 84, 200, 0.25);
+        }
+        
+        .history-item {
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .history-item:hover {
+            background-color: rgba(78, 84, 200, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .developer-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 small {
+                display: none !important;
+            }
+        }
+        .progress-container {
+        position: fixed;
+        top: 50vh;
+        left: 50%;
+
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 500px;
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+    }
+    
+    body {
+        position: relative;
+        background: #f8f9fa;
+    }
+    
+    .status-info {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: #555;
+    }
+    .progress {
+            height: 25px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .status-info {
+            margin-bottom: 15px;
+        }
+        .btn-danger {
+            background-color: #ff0000;
+            border-color: #ff0000;
+        }
+        #filename-display {
+            word-break: break-word;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header bg-primary text-white py-3 fixed-top shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h5 mb-0 fw-bold">
+                🎬 Free YouTube Downloader by Meshack 
+                <small class="d-block text-light fw-normal" style="font-size: 0.8rem;">
+                    Actively looking for a Software Internship 🚀
+                </small>
+            </h1>
+            <nav>
+                {% if first_name %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-light btn-sm text-danger fw-bold">Logout</a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+
+    <!-- Add some spacing below fixed header -->
+    <div style="height: 90px;"></div>
+
+    <div class="container py-4">
+        <!-- Downloader Section -->
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto">
+                <div class="downloader-card p-4 p-md-5 mb-4">
+                    <h2 class="text-center mb-4"><i class="fab fa-youtube me-2 text-danger"></i> YouTube Video Downloader</h2>
+                    <p class="text-center mb-4">Download high-quality videos from YouTube in multiple formats</p>
+                    
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-lg" placeholder="Paste YouTube URL here..." id="youtube-url">
+                        <button class="btn btn-primary" type="button" id="download-btn" onclick="fetchVideoInfo(document.getElementById('youtube-url').value)">
+                            <i class="fas fa-download me-2"></i> Download
+                        </button>
+                    </div>
+
+                    <div class="container my-4 d-none" id="searching">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 col-lg-6">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-gradient-success text-white py-3">
+                                        <h4 class="mb-0 text-center">
+                                            <i class="fas fa-search me-2"></i>Searching for Results
+                                        </h4>
+                                    </div>
+                                    <div class="card-body text-center py-4">
+                                        <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-3 mb-0 text-muted">Please wait while we find the best matches for you...</p>
+                                        <div class="progress mt-3" style="height: 6px;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <small class="text-muted">Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</small>
+                        <div class="video-info d-none" id="video-info">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img id="video-thumbnail" src="" alt="Thumbnail" class="thumbnail">
+                                </div>
+                                <div class="col-md-8">
+                                    <h2 id="video-title"></h2>
+                                    <p><strong>Uploader:</strong><span id="video-uploader"></span></p>
+                                    <p><strong>Duration:</strong><span id="video-duration"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="download-options" class="mt-4" style="display: none;">
+                        <h5 class="mb-3">Download Options:</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-film feature-icon"></i>
+                                        <h5>Video (MP4)</h5>
+                                        <div class="d-flex flex-wrap">
+                                            <div id="video-buttons" class="d-flex justify-content-center flex-wrap gap-2"></div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-music feature-icon"></i>
+                                        <h5>Audio (MP3)</h5>
+                                        <div class="d-flex flex-wrap">
+                                            <div id="audio-buttons" class="d-flex justify-content-center flex-wrap gap-2"></div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Download History Section -->
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto">
+                <div class="downloader-card p-4 p-md-5">
+                    <h3 class="mb-4"><i class="fas fa-history me-2"></i> Your Download History</h3>
+                    
+                    <div class="list-group" id="historyContainer">
+                        <!-- History Item 1 -->
+                        <!-- <div class="list-group-item history-item mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">How to Build a REST API with Flask</h6>
+                                    <small class="text-muted">Downloaded: Today, 10:30 AM | Format: MP4 (1080p)</small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-primary me-1" data-bs-toggle="collapse" data-bs-target="#details-1">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success">
+                                        <i class="fas fa-redo"></i> Re-download
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="collapse mt-2" id="details-1">
+                                <div class="card card-body bg-light">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Video Details:</strong></p>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Duration:</strong> 15:42</li>
+                                                <li><strong>Channel:</strong> CodeWithMe</li>
+                                                <li><strong>Views:</strong> 245,678</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Download Info:</strong></p>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Version:</strong> v2.3.1</li>
+                                                <li><strong>File Size:</strong> 124 MB</li>
+                                                <li><strong>Download Speed:</strong> 8.4 MB/s</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="list-group-item history-item mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Learn React in 1 Hour</h6>
+                                    <small class="text-muted">Downloaded: Yesterday, 3:45 PM | Format: MP3 (320kbps)</small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-primary me-1" data-bs-toggle="collapse" data-bs-target="#details-2">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success">
+                                        <i class="fas fa-redo"></i> Re-download
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="collapse mt-2" id="details-2">
+                                <div class="card card-body bg-light">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Video Details:</strong></p>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Duration:</strong> 1:02:15</li>
+                                                <li><strong>Channel:</strong> WebDev Simplified</li>
+                                                <li><strong>Views:</strong> 1,245,321</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Download Info:</strong></p>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Version:</strong> v2.3.1</li>
+                                                <li><strong>File Size:</strong> 85 MB</li>
+                                                <li><strong>Download Speed:</strong> 6.2 MB/s</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="list-group-item history-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Android Development Tutorial</h6>
+                                    <small class="text-muted">Downloaded: 2 days ago | Format: MP4 (720p)</small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-primary me-1" data-bs-toggle="collapse" data-bs-target="#details-3">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success">
+                                        <i class="fas fa-redo"></i> Re-download
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="collapse mt-2" id="details-3">
+                                <div class="card card-body bg-light">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Video Details:</strong></p>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Duration:</strong> 42:18</li>
+                                                <li><strong>Channel:</strong> Android Developers</li>
+                                                <li><strong>Views:</strong> 876,543</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Download Info:</strong></p>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Version:</strong> v2.2.9</li>
+                                                <li><strong>File Size:</strong> 210 MB</li>
+                                                <li><strong>Download Speed:</strong> 5.8 MB/s</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- About Developer Section -->
+        <div class="row mb-5" id="about">
+            <div class="col-lg-8 mx-auto">
+                <div class="developer-card p-4 p-md-5">
+                    <h2 class="text-center mb-4"><i class="fas fa-user-tie me-2"></i> About the Developer</h2>
+                    
+                    <div class="row align-items-center">
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <img src="https://www.sportpress.international/wp-content/uploads/2023/09/IMG_0578-scaled.jpg" class="rounded-circle img-thumbnail" alt="Meshack" style="width: 150px; height: 150px; object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <h3>Meshack (DisruptorDev)</h3>
+                            <p class="lead">Software Developer & Innovator</p>
+                            
+                            <div class="mb-3">
+                                <span class="badge badge-primary me-1 mb-1">Flask/Django</span>
+                                <span class="badge badge-primary me-1 mb-1">Android (Java)</span>
+                                <span class="badge badge-primary me-1 mb-1">React</span>
+                                <span class="badge badge-primary me-1 mb-1">MySQL/MongoDB</span>
+                                <span class="badge badge-primary me-1 mb-1">AWS</span>
+                                <span class="badge badge-primary me-1 mb-1">MPesa API</span>
+                            </div>
+                            
+                            <p>I'm a passionate software developer specializing in building powerful, modern web and mobile applications. Currently looking for internship opportunities to further enhance my skills.</p>
+                            
+                            <div class="mt-4">
+                                <h5 class="mb-3">Contact Me:</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-phone me-2"></i> 0757316903</li>
+                                    <li class="mb-2"><i class="fas fa-envelope me-2"></i> meshnehemia7@gmail.com</li>
+                                    <li class="mb-2"><i class="fas fa-globe me-2"></i> <a href="https://softwareengineermesh.lovestoblog.com/" class="text-white">My Portfolio</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <h4 class="text-center mb-4">My Projects</h4>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-light bg-opacity-10 border-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-store me-2"></i> Supermarket System</h5>
+                                        <p class="card-text">With facial recognition, MPesa integration, and live tracking.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-light bg-opacity-10 border-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-building me-2"></i> Construction Task App</h5>
+                                        <p class="card-text">For assigning, tracking, and paying construction workers.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-light bg-opacity-10 border-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-book me-2"></i> Library System</h5>
+                                        <p class="card-text">Complete library management solution with user tracking.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- pursing page appearence when download initiated -->
+    <div class="container center mt-5 z-index-1 py-3 d-none">
+        <div class="progress-container">
+            <h2 class="text-center">Download in Progress</h2>
+            <div id="status-message" class="text-center mb-3">Starting download...</div>
+            
+            <div id="filename-display" class="text-muted"></div>
+            
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 0%">0%</div>
+            </div>
+            
+            <div class="status-info">
+                <div><strong>Speed:</strong> <span id="speed">-</span></div>
+                <div><strong>ETA:</strong> <span id="eta">-</span></div>
+            </div>
+            
+            <div id="download-complete" style="display: none;">
+                <div class="alert alert-success text-center">
+                    Download complete! Your file is ready.
+                </div>
+                <div class="d-grid">
+                    <a id="download-btn" href="#" class="btn btn-success btn-lg">Download File</a>
+                    <a href="/" class="btn btn-secondary mt-2">Download Another Video</a>
+                </div>
+            </div>
+            
+            <div id="download-error" class="alert alert-danger text-center" style="display: none;">
+                An error occurred during download. Please try again.
+                <div class="d-grid mt-2">
+                    <a href="/" class="btn btn-danger">Go Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- on completed -->
+    <div class="container d-none">
+        <div class="progress-container">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="text-center">Download Complete!</h2>
+                </div>
+                <div class="card-body text-center">
+                    <p>Your file has been downloaded successfully.</p>
+                    <a href="{{ url_for('download_file', filename=filename|urlencode) }}" class="btn btn-primary">
+                        Download Now
+                    </a>
+                    <a href="{{ url_for('home') }}" class="btn btn-secondary">Download Another Video</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simulate download functionality
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const url = document.getElementById('youtube-url').value;
+            if (url) {
+                document.getElementById('download-options').style.display = 'block';
+                
+                // In a real implementation, this would fetch video info and show download options
+                setTimeout(() => {
+                    // Scroll to options
+                    // Scroll to top
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                                        // document.getElementById('download-options').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            } else {
+                alert('Please enter a YouTube URL');
+            }
+        });
+        
+        // Simulate re-download functionality
+        document.querySelectorAll('.btn-success').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                alert('This would re-download the selected video in the original format');
+            });
+        });
+
+
+        // function updateProgress() {
+        //     fetch('/progress')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             // Update progress bar
+        //             const progressBar = document.getElementById('progress-bar');
+        //             const percentage = data.percentage;
+                    
+        //             // Update filename display
+        //             if (data.filename) {
+        //                 const filename = data.filename.split('/').pop().split('\\').pop();
+        //                 document.getElementById('filename-display').innerHTML = 
+        //                     `<strong>File:</strong> ${filename}`;
+        //             }
+                    
+        //             if (data.status === 'downloading') {
+        //                 document.getElementById('status-message').textContent = 'Downloading...';
+        //                 progressBar.style.width = percentage;
+        //                 progressBar.textContent = percentage;
+        //                 document.getElementById('speed').textContent = data.speed;
+        //                 document.getElementById('eta').textContent = data.eta;
+        //             } 
+        //             else if (data.status === 'finished') {
+        //                 progressBar.style.width = '100%';
+        //                 progressBar.textContent = '100%';
+        //                 progressBar.classList.remove('progress-bar-animated');
+        //                 document.getElementById('status-message').textContent = 'Processing file...';
+                        
+        //                 // Redirect to complete page after short delay
+        //                 setTimeout(() => {
+        //                     window.location.href = '/download_complete';
+        //                 }, 1000);
+        //             }
+        //             else if (data.status === 'error') {
+        //                 document.getElementById('download-error').style.display = 'block';
+        //                 document.getElementById('status-message').textContent = 'Download failed';
+        //                 clearInterval(progressInterval);
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Error fetching progress:', error);
+        //         });
+        // }
+
+        // // Check progress every second
+        // const progressInterval = setInterval(updateProgress, 1000);
+        
+        // // Initial update
+        // updateProgress();
+        
+        async function fetchVideoInfo(url) {
+    document.getElementById('searching').classList.remove('d-none');
+    document.getElementById('video-info').style.display = 'block';
+
+    try {
+        const response = await fetch(`/information/url?url=${encodeURIComponent(url)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            document.getElementById('searching').classList.add('d-none');
+            
+            throw new Error(`Server responded with status ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Display video basic information
+        console.log('Video Title:', data.title);
+        console.log('Thumbnail:', data.thumbnail);
+        console.log('Videos:', data.videos);
+        console.log('Audios:', data.audios);
+        console.log('Uploader:', data.uploader);
+        console.log('Duration:', data.duration, 'seconds');
+
+        document.getElementById('video-title').innerText = `🎬  ${data.title}`;
+        document.getElementById('video-thumbnail').src = data.thumbnail;
+        document.getElementById('video-uploader').innerText = `👤 ${data.uploader}`;
+        document.getElementById('video-duration').innerText = `⏱️ ${data.duration} seconds`;
+        document.getElementById('video-info').classList.remove('d-none');
+        document.getElementById('searching').classList.add('d-none');
+
+        // Use the videos and audios received
+        const videoContainer = document.getElementById('video-buttons');
+        const audioContainer = document.getElementById('audio-buttons');
+
+        // Clear previous buttons if any
+        videoContainer.innerHTML = '';
+        audioContainer.innerHTML = '';
+
+        const formats = [...data.videos, ...data.audios]; // Merge both arrays
+
+        formats.forEach(format => {
+    if (format.vcodec && format.resolution && format.resolution !== 'audio only') {
+        // Check if the filesize is greater than 0
+        if (format.filesize > 0) {
+            const btn = document.createElement('a');
+            btn.href = format.url;
+            btn.className = 'btn btn-sm btn-outline-primary m-1';
+            btn.textContent = format.height + ' ' + format.ext.toUpperCase() + ' ' + (format.filesize / 1024 / 1024).toFixed(2) + ' MB';
+            btn.target = '_blank';
+            btn.setAttribute('download', `${data.title}_${format.resolution}.${format.ext}`); // Trigger download with the specified file name
+            // Register download history first, then initiate download
+            btn.setAttribute('onclick', `registerDownloadHistory('${data.title}', '${data.uploader}', '${data.duration}', '${format.url}', '${format.resolution}', '${(format.filesize/1024/1024).toFixed(2)}MB', '${format.ext}')`);
+            videoContainer.appendChild(btn);
+        }
+    } else if (format.acodec && format.abr || format.resolution === 'audio only') {
+        // Check if the filesize is greater than 0
+        if (format.filesize > 0) {
+            const btn = document.createElement('a');
+            btn.href = format.url;
+            btn.className = 'btn btn-sm btn-outline-success m-1';
+            btn.textContent = format.abr + 'kbps' + ' ' + (format.filesize/1024/1024).toFixed(2) + 'MB';
+            btn.target = '_blank';
+            // Register download history first, then initiate download
+            btn.setAttribute('onclick', `registerDownloadHistory('${data.title}', '${data.uploader}', '${data.duration}', '${format.url}', '${format.resolution}', '${(format.filesize/1024/1024).toFixed(2)}MB', '${format.ext}')`);
+            // btn.setAttribute('download', `${data.title}_${format.resolution}.${format.ext}`); // Trigger download with the specified file name
+            audioContainer.appendChild(btn);
+        }
+    }
+});
+
+    } catch (error) {
+        document.getElementById('searching').innerHTML= "❌ Failed to fetch video information: ", error.message;
+        alert('❌ Failed to fetch video information: ' + error.message);
+    }
+}
+
+async function registerDownloadHistory(videoTitle, downloadedBy, duration, videoLink, resolution, fileSize, fileType) {
+    const data = {
+        video_title: videoTitle,
+        downloaded_by: downloadedBy,
+        duration: duration,
+        video_link: document.getElementById('youtube-url').value,
+        resolution: resolution,
+        file_size: fileSize,
+        file_type: fileType
+    };
+
+    try {
+        // Sending the video data to the Flask API to register download history
+        const response = await fetch('/register_download_history', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.status) {
+            alert(result.message); // Success message
+            // If registration is successful, start downloading the video/audio
+            startDownload(videoLink);
+            fetchDownloadHistory();
+        } else {
+            alert(result.message); // Error message
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Failed to register download history!');
+    }
+}
+
+function startDownload(url) {
+    // Create a temporary anchor tag and trigger the download
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.target = '_blank';
+    downloadLink.setAttribute('download', `${data.title}_${format.resolution}.${format.ext}`);  // Optional: Specify the download file name if needed
+    downloadLink.click();  // Trigger the download
+}
+
+function fetchDownloadHistory() {
+    fetch('/get_download_history')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                const historyContainer = document.getElementById('historyContainer');
+                historyContainer.innerHTML = '';  // Clear previous content
+                
+                // Populate the container with history items
+                data.history.forEach((record, index) => {
+                    const collapseId = `details-${index + 1}`;
+                    const historyItem = document.createElement('div');
+                    historyItem.classList.add('list-group-item', 'history-item', 'mb-2');
+                    historyItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${record.video_title}</h6>
+                                <small class="text-muted">Downloaded: ${record.date_downloaded} | Format: ${record.file_type}</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-primary me-1" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="redownload('${record.video_link}')">
+                                    <i class="fas fa-redo"></i> Re-download
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse mt-2" id="${collapseId}">
+                            <div class="card card-body bg-light">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Video Details:</strong></p>
+                                        <ul class="list-unstyled">
+                                            <li><strong>Duration:</strong> ${record.duration}</li>
+                                            <li><strong>User:</strong> ${record.downloaded_by}</li>
+                                            <li><strong>Email:</strong> ${record.email}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Download Info:</strong></p>
+                                        <ul class="list-unstyled">
+                                            <li><strong>Date Downloaded:</strong> ${record.date_downloaded}</li>
+                                            <li><strong>File Size:</strong> ${record.file_size} MB</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    historyContainer.appendChild(historyItem);
+                });
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Something went wrong.');
+        });
+}
+
+fetchDownloadHistory();
+
+function redownload(videoLink) {
+    document.getElementById('youtube-url').value = videoLink;
+    // Scroll to top
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+    </script>
+</body>
+</html>

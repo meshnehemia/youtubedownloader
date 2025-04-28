@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Options - {{ video_info.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .video-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .thumbnail {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .format-option {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-danger {
+            background-color: #ff0000;
+            border-color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="video-info">
+            <div class="row">
+                <div class="col-md-4">
+                    <img src="{{ video_info.thumbnail }}" alt="Thumbnail" class="thumbnail">
+                </div>
+                <div class="col-md-8">
+                    <h2>{{ video_info.title }}</h2>
+                    <p><strong>Uploader:</strong> {{ video_info.uploader }}</p>
+                    <p><strong>Duration:</strong> {{ video_info.duration // 60 }}:{{ "%02d" % (video_info.duration % 60) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <h3>Video Formats</h3>
+        <form method="POST" action="/download">
+            <input type="hidden" name="url" value="{{ url }}">
+            
+            {% for v in video_info.videos %}
+                <div class="format-option">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="format_id" id="format{{ loop.index }}" value="{{ v.format_id }}" {% if loop.first %}checked{% endif %}>
+                        <label class="form-check-label" for="format{{ loop.index }}">
+                            <strong>{{ v.get('format_note', 'Unknown quality') }}</strong> | 
+                            {{ v.ext.upper() }} | 
+                            {% if v.filesize %}
+                                {{ "%.2f"|format(v.filesize / 1024 / 1024) }}MB
+                            {% else %}
+                                Unknown size
+                            {% endif %}
+                            {% if v.height and v.width %}
+                                ({{ v.width }}x{{ v.height }})
+                            {% endif %}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <h3 class="mt-4">Audio Only Formats</h3>
+            {% for a in video_info.audios %}
+                <div class="format-option">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="format_id" id="audio{{ loop.index }}" value="{{ a.format_id }}">
+                        <label class="form-check-label" for="audio{{ loop.index }}">
+                            <strong>Audio Only</strong> | 
+                            {{ a.ext.upper() }} | 
+                            {% if a.filesize %}
+                                {{ "%.2f"|format(a.filesize / 1024 / 1024) }}MB
+                            {% else %}
+                                Unknown size
+                            {% endif %}
+                            {% if a.abr %}
+                                ({{ a.abr }}kbps)
+                            {% endif %}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-danger btn-lg">Download Selected Format</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

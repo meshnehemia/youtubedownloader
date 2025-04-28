@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Complete</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card {
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-danger {
+            background-color: #ff0000;
+            border-color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h2 class="text-center">Download Complete!</h2>
+            </div>
+            <div class="card-body text-center">
+                <p>Your file has been downloaded successfully.</p>
+                <a href="{{ url_for('download_file', filename=filename|urlencode) }}" class="btn btn-primary">
+                    Download Now
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Download Another Video</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DisruptorDev | Software Engineer & Innovator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --accent-color: #ff6b6b;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--light-color) 0%, #e0e5ec 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .auth-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a41b0;
+            border-color: #3a41b0;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .social-icon {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            transition: color 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--dark-color);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 84, 200, 0.25);
+        }
+        
+        .floating-label {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .floating-label label {
+            position: absolute;
+            top: 0.6rem;
+            left: 1rem;
+            color: #6c757d;
+            transition: all 0.2s;
+            pointer-events: none;
+        }
+        
+        .floating-label input:focus ~ label,
+        .floating-label input:not(:placeholder-shown) ~ label {
+            top: -0.8rem;
+            left: 0.8rem;
+            font-size: 0.8rem;
+            background: white;
+            padding: 0 0.3rem;
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content {
+                text-align: center;
+            }
+            
+            .feature-box {
+                margin-bottom: 2rem;
+            }
+        }
+        .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Transparent black background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 9999; /* Ensure it's above all other content */
+        color: white;
+        font-size: 1.5em;
+        display: none; /* Hidden by default */
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    #loading-message {
+        margin-top: 20px;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    #loading-message-registration {
+        margin-top: 20px;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    /* Optional: Customize spinner color and size */
+    .spinner-border.text-primary {
+        color: #4fa3f7;
+    }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+<div class="header bg-primary text-white py-3 fixed-top shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="h5 mb-0 fw-bold">
+            🎬 Free YouTube Downloader by Meshack 
+            <small class="d-block text-light fw-normal" style="font-size: 0.8rem;">
+                Actively looking for a Software Internship 🚀
+            </small>
+        </h1>
+        <nav>
+            <a href="https://softwareengineermesh.lovestoblog.com" class="btn btn-light btn-sm text-success fw-bold">More about Developer</a>
+            {% if first_name %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-light btn-sm text-danger fw-bold">Logout</a>
+            {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-light btn-sm text-success fw-bold">Login</a>
+            {% endif %}
+        </nav>
+    </div>
+</div>
+
+<!-- Add some spacing below fixed header -->
+<div style="height: 90px;"></div>
+
+    <div class="container py-5">
+        <div class="row">
+            <!-- Hero/Marketing Section -->
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="hero-section p-4 p-md-6">
+                    <h1 class="display-6 fw-bold mb-3">Hi, I'm DisruptorDev! 👋</h1>
+                    <p class="lead mb-4">I create digital solutions that <span class="fw-bold">empower</span>, <span class="fw-bold">transform</span>, and <span class="fw-bold">disrupt</span> the ordinary!</p>
+                    
+                    <div class="row mt-5">
+                        <div class="col-md-6 feature-box">
+                            <div class="feature-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h4>Full-Stack Developer</h4>
+                            <p>Specializing in web & mobile applications with modern technologies.</p>
+                        </div>
+                        <div class="col-md-6 feature-box">
+                            <div class="feature-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <h4>Innovative & Inventor</h4>
+                            <p>
+                                Passionate about innovation and always on the hunt for groundbreaking ideas that can make a real difference. 
+                                Driven by creativity, fueled by curiosity.
+                            </p>
+
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="mb-3">My Skills Include:</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark">Flask/Django</span>
+                            <span class="badge bg-light text-dark">Android (Java)</span>
+                            <span class="badge bg-light text-dark">React</span>
+                            <span class="badge bg-light text-dark">MySQL/MongoDB</span>
+                            <span class="badge bg-light text-dark">AWS</span>
+                            <span class="badge bg-light text-dark">MPesa API</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <h5 class="mb-3">Contact Me:</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-phone me-2"></i> 0757316903</li>
+                            <li class="mb-2"><i class="fas fa-envelope me-2"></i> meshnehemia7@gmail.com</li>
+                            <li class="mb-2"><i class="fas fa-globe me-2"></i> <a href="https://softwareengineermesh.lovestoblog.com/" class="text-white">My Portfolio</a></li>
+                        </ul>
+                        <div class="d-flex gap-3 mt-3">
+                            <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Auth Section -->
+            <div class="col-lg-6">
+                <div class="auth-card p-4 p-md-5">
+                    <ul class="nav nav-pills mb-4 justify-content-center" id="auth-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#login" type="button" role="tab">Login</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="pill" data-bs-target="#register" type="button" role="tab">Register</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="auth-tabContent">
+                        <!-- Login Form -->
+                        <div class="tab-pane fade show active" id="login" role="tabpanel">
+                            <h3 class="text-center mb-4">Access YouTube Downloader</h3>
+                            <form id="login-form">
+                                <div class="floating-label">
+                                    <input type="email" class="form-control" id="login-email" name="login-email" placeholder=" " required>
+                                    <label for="login-email">Email Address</label>
+                                </div>
+                                <div class="floating-label">
+                                    <input type="password" class="form-control" id="login-password" placeholder=" " name="login-password" required>
+                                    <label for="login-password">Password</label>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="remember-me">
+                                        <label class="form-check-label" for="remember-me">Remember me</label>
+                                    </div>
+                                    <a href="#" class="text-decoration-none">Forgot password?</a>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Login</button>
+                                <p class="text-center mb-0">Don't have an account? <a href="#" class="text-decoration-none" onclick="switchToRegister()">Register</a></p>
+                                <!-- Loading overlay -->
+                                <div id="loading-overlay" class="loading-overlay" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <p id="loading-message">Logging in...</p>
+                                </div>
+
+                                <!-- Error message -->
+                                <p id="error-message" style="color: red; display: none;"></p>
+                        
+                            
+                            </form>
+                            
+                            <div class="text-center mt-4">
+                                <p class="mb-3">Or login with:</p>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <button class="btn btn-outline-primary rounded-circle p-2"><i class="fab fa-google"></i></button>
+                                    <button class="btn btn-outline-primary rounded-circle p-2"><i class="fab fa-github"></i></button>
+                                    <button class="btn btn-outline-primary rounded-circle p-2"><i class="fab fa-twitter"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Registration Form -->
+                        <div class="tab-pane fade" id="register" role="tabpanel">
+                            <h3 class="text-center mb-4">Create Account</h3>
+                            <form id="register-form">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <input type="text" class="form-control" id="first-name" placeholder=" " required>
+                                            <label for="first-name">First Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <input type="text" class="form-control" id="last-name" placeholder=" " required>
+                                            <label for="last-name">Last Name</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="floating-label">
+                                    <input type="email" class="form-control" id="register-email" placeholder=" " required>
+                                    <label for="register-email">Email Address</label>
+                                </div>
+                                <div class="floating-label">
+                                    <input type="password" class="form-control" id="register-password" placeholder=" " required>
+                                    <label for="register-password">Password</label>
+                                </div>
+                                <div class="floating-label">
+                                    <input type="password" class="form-control" id="confirm-password" placeholder=" " required>
+                                    <label for="confirm-password">Confirm Password</label>
+                                </div>
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">I agree to the <a href="#" class="text-decoration-none">Terms & Conditions</a></label>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Register</button>
+                                <p class="text-center mb-0">Already have an account? <a href="#" class="text-decoration-none" onclick="switchToLogin()">Login</a></p>
+                                
+                                 <!-- Loading overlay -->
+                                 <div id="loading-overlay-registration" class="loading-overlay" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <p id="loading-message-registration">Logging in...</p>
+                                </div>
+
+                                <!-- Error message -->
+                                <p id="error-message-registration" style="color: red; display: none;"></p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p>Need help? Contact me at <a href="tel:0757316903">0757316903</a> or <a href="mailto:meshnehemia7@gmail.com">meshnehemia7@gmail.com</a></p>
+                    <p>Visit my portfolio: <a href="https://softwareengineermesh.lovestoblog.com/" target="_blank">softwareengineermesh.lovestoblog.com</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function switchToRegister() {
+            const registerTab = new bootstrap.Tab(document.getElementById('register-tab'));
+            registerTab.show();
+        }
+        
+        function switchToLogin() {
+            const loginTab = new bootstrap.Tab(document.getElementById('login-tab'));
+            loginTab.show();
+        }
+       
+            document.getElementById("login-form").addEventListener("submit", function(event) {
+                event.preventDefault(); 
+                document.getElementById('loading-overlay').style.display = 'flex';
+                document.getElementById('error-message').style.display = 'none'; 
+                const formData = new FormData(this);
+                fetch('/login', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/';
+                    } else {
+                        document.getElementById('error-message').innerText = data.error;
+                        document.getElementById('error-message').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('error-message').innerText = error;
+                    document.getElementById('error-message').style.display = 'block';
+                })
+                .finally(() => {
+                    document.getElementById('loading-overlay').style.display = 'none';
+                });
+            });
+
+
+            document.getElementById("register-form").addEventListener("submit", async function(e) {
+    e.preventDefault(); // prevent normal form submit
+
+    // Show loading
+    document.getElementById("loading-overlay-registration").style.display = "block";
+    document.getElementById("error-message-registration").style.display = "none"; 
+
+    const firstName = document.getElementById("first-name").value;
+    const lastName = document.getElementById("last-name").value;
+    const email = document.getElementById("register-email").value;
+    const password = document.getElementById("register-password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    try {
+        const response = await fetch("/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                password: password,
+                confirm_password: confirmPassword
+            })
+        });
+
+        const data = await response.json();
+        document.getElementById("loading-overlay-registration").style.display = "none";
+
+        if (data.success) {
+            alert("🎉 Registration successful! Please login.");
+            // Optionally switch to login form
+            switchToLogin();
+        } else {
+            document.getElementById("error-message-registration").textContent = data.message;
+            document.getElementById("error-message-registration").style.display = "block";
+        }
+    } catch (error) {
+        document.getElementById("loading-overlay-registration").style.display = "none";
+        document.getElementById("error-message-registration").textContent = "⚠️ An error occurred. Please try again.";
+        document.getElementById("error-message-registration").style.display = "block";
+    }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download in Progress</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .progress-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .progress {
+            height: 25px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .status-info {
+            margin-bottom: 15px;
+        }
+        .btn-danger {
+            background-color: #ff0000;
+            border-color: #ff0000;
+        }
+        #filename-display {
+            word-break: break-word;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-container">
+            <h2 class="text-center">Download in Progress</h2>
+            <div id="status-message" class="text-center mb-3">Starting download...</div>
+            
+            <div id="filename-display" class="text-muted"></div>
+            
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 0%">0%</div>
+            </div>
+            
+            <div class="status-info">
+                <div><strong>Speed:</strong> <span id="speed">-</span></div>
+                <div><strong>ETA:</strong> <span id="eta">-</span></div>
+            </div>
+            
+            <div id="download-complete" style="display: none;">
+                <div class="alert alert-success text-center">
+                    Download complete! Your file is ready.
+                </div>
+                <div class="d-grid">
+                    <a id="download-btn" href="#" class="btn btn-success btn-lg">Download File</a>
+                    <a href="/" class="btn btn-secondary mt-2">Download Another Video</a>
+                </div>
+            </div>
+            
+            <div id="download-error" class="alert alert-danger text-center" style="display: none;">
+                An error occurred during download. Please try again.
+                <div class="d-grid mt-2">
+                    <a href="/" class="btn btn-danger">Go Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateProgress() {
+            fetch('/progress')
+                .then(response => response.json())
+                .then(data => {
+                    // Update progress bar
+                    const progressBar = document.getElementById('progress-bar');
+                    const percentage = data.percentage;
+                    
+                    // Update filename display
+                    if (data.filename) {
+                        const filename = data.filename.split('/').pop().split('\\').pop();
+                        document.getElementById('filename-display').innerHTML = 
+                            `<strong>File:</strong> ${filename}`;
+                    }
+                    
+                    if (data.status === 'downloading') {
+                        document.getElementById('status-message').textContent = 'Downloading...';
+                        progressBar.style.width = percentage;
+                        progressBar.textContent = percentage;
+                        document.getElementById('speed').textContent = data.speed;
+                        document.getElementById('eta').textContent = data.eta;
+                    } 
+                    else if (data.status === 'finished') {
+                        progressBar.style.width = '100%';
+                        progressBar.textContent = '100%';
+                        progressBar.classList.remove('progress-bar-animated');
+                        document.getElementById('status-message').textContent = 'Processing file...';
+                        
+                        // Redirect to complete page after short delay
+                        setTimeout(() => {
+                            window.location.href = '/download_complete';
+                        }, 1000);
+                    }
+                    else if (data.status === 'error') {
+                        document.getElementById('download-error').style.display = 'block';
+                        document.getElementById('status-message').textContent = 'Download failed';
+                        clearInterval(progressInterval);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching progress:', error);
+                });
+        }
+
+        // Check progress every second
+        const progressInterval = setInterval(updateProgress, 1000);
+        
+        // Initial update
+        updateProgress();
+    </script>
+</body>
+</html>
