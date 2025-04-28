@@ -5,9 +5,9 @@ def create_database_and_tables():
     try:
         # Connect to MySQL server
         connection = mysql.connector.connect(
-            host='localhost',
+            host='meshcloudatabase.cqbq0ewwi0q8.us-east-1.rds.amazonaws.com',
             user='root',
-            password=''
+            password='Mesh2254452'
         )
         
         if connection.is_connected():

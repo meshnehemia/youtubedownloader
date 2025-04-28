@@ -3,16 +3,16 @@ from mysql.connector import Error
 
 class DatabaseConnector:
     def __init__(self):
-        # self.host = 'meshcloudatabase.cqbq0ewwi0q8.us-east-1.rds.amazonaws.com'
-        # self.database = 'construction'
-        # self.user = 'root'
-        # self.password = 'Mesh2254452'
-        # self.connection = None
-        self.host = 'localhost'
+        self.host = 'meshcloudatabase.cqbq0ewwi0q8.us-east-1.rds.amazonaws.com'
         self.database = 'youtubedownloader'
         self.user = 'root'
-        self.password = ''
+        self.password = 'Mesh2254452'
         self.connection = None
+        # self.host = 'localhost'
+        # self.database = 'youtubedownloader'
+        # self.user = 'root'
+        # self.password = ''
+        # self.connection = None
 
     def connect(self):
         try:
