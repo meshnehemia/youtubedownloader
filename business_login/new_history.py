@@ -1,4 +1,4 @@
-from aifc import Error
+
 from .database.connect import DatabaseConnector  # Ensure proper import
 
 class Userhistory:
@@ -45,7 +45,7 @@ class Userhistory:
             # Commit the changes to the database
             self.connection.commit()
             return True, "✅ Video download history registered successfully!"
-        except Error as e:
+        except Exception as e:
             return False, f"❌ Error: {e}"
 
         finally:

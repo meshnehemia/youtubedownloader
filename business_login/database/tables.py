@@ -1,6 +1,4 @@
 import mysql.connector
-from mysql.connector import Error
-from connect import DatabaseConnector
 def create_database_and_tables():
     try:
         # Connect to MySQL server
@@ -49,7 +47,7 @@ def create_database_and_tables():
             """)
             print("✅ Table 'video_downloads' created or already exists.")
     
-    except Error as e:
+    except Exception as e:
         print(f"❌ Error: {e}")
     finally:
         if connection.is_connected():

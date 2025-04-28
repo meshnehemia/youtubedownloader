@@ -1,5 +1,3 @@
-import mysql.connector
-from mysql.connector import Error
 from .database.connect import DatabaseConnector
 class UserHistory:
     def __init__(self):
@@ -48,7 +46,7 @@ class UserHistory:
                     'email': record[12]
                 })
             return True, history_list
-        except Error as e:
+        except Exception as e:
             return False, f"❌ Error: {e}"
         finally:
             # Step 4: Close the connection after operations

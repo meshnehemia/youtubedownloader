@@ -1,6 +1,4 @@
 import mysql.connector
-from mysql.connector import Error
-
 class DatabaseConnector:
     def __init__(self):
         self.host = 'meshcloudatabase.cqbq0ewwi0q8.us-east-1.rds.amazonaws.com'
@@ -41,6 +39,6 @@ class DatabaseConnector:
             else:
                 print("⚠️ No active connection to close.")
                 return False, "⚠️ No active connection to close."
-        except Error as e:
+        except Exception as e:
             print(f"❌ Error closing connection: {e}")
             return False, f"❌ Error closing connection: {e}"

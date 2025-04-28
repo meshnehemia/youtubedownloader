@@ -1,5 +1,4 @@
 import mysql.connector
-from mysql.connector import Error
 import bcrypt
 import re
 from .database.connect import DatabaseConnector
@@ -60,7 +59,7 @@ class UserLogin:
 
             return True, user_info
 
-        except Error as e:
+        except Exception as e:
             print(f"❌ Error: {e}")
             return False, f"❌ Database error: {e}"
 

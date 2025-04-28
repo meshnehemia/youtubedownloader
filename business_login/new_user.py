@@ -1,5 +1,4 @@
 import mysql.connector
-from mysql.connector import Error
 import bcrypt
 import re
 from .database.connect import DatabaseConnector
@@ -75,7 +74,7 @@ class UserRegistration:
             print("✅ User registered successfully!")
             return True, "✅ User registered successfully!"
 
-        except Error as e:
+        except Exception as e:
             print(f"❌ Error: {e}")
             return False, f"❌ Database error: {e}"
 
